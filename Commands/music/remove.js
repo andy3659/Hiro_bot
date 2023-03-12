@@ -1,17 +1,23 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const musicEmbed = require("../Util/music/musicEmbed.js");
+const musicEmbed = require("../../Util/music/musicEmbed.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("clear")
-    .setDescription("Clear queue!"),
+    .setName("remove")
+    .setDescription("Remove song with index")
+    .addIntegerOption((option) =>
+      option
+        .setName("index")
+        .setDescription("Enter queue number")
+        .setRequired(true)
+    ),
   async execute(interaction) {
+    const queueNumber = interaction.options.getInteger("index");
     const musicConnection = interaction.client.musicConnection.get(
       interaction.guild.id
     );
-
     const memberChannel = interaction.member.voice.channel;
-    const clientChannel = interaction.guild.me.voice.channel;
+    const clientChannel = interaction.guild.members.me.voice.channel;
     // If user not in voice channel
     if (!memberChannel) {
       return interaction.reply({
@@ -34,7 +40,16 @@ module.exports = {
       });
       return;
     }
-    musicConnection.clear();
-    interaction.reply({ embeds: [musicEmbed.message(`Queue Cleared!`)] });
+
+    if (queueNumber > musicConnection.queue.length || queueNumber < 1) {
+      interaction.reply({ embeds: [musicEmbed.message("No Song To Remove~")] });
+      return;
+    }
+
+    const songTitle = musicConnection.queue[queueNumber - 1].title;
+    musicConnection.remove(queueNumber);
+    interaction.reply({
+      embeds: [musicEmbed.message(`Removed ${songTitle}!`)],
+    });
   },
 };

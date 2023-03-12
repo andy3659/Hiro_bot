@@ -1,5 +1,5 @@
 const pldl = require("play-dl");
-const musicEmbed = require("./musicEmbed.js");
+const musicEmbed = require("../../Util/music/musicEmbed.js");
 const {
   createAudioPlayer,
   createAudioResource,

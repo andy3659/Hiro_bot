@@ -1,15 +1,23 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 
-const musicEmbed = require("../Util/music/musicEmbed.js");
 module.exports = {
-  data: new SlashCommandBuilder().setName("skip").setDescription("Skip Song"),
+  data: new SlashCommandBuilder()
+    .setName("jump")
+    .setDescription("Jump to Song in queue")
+    .addIntegerOption((option) =>
+      option
+        .setName("int")
+        .setDescription("Enter queue number")
+        .setRequired(true)
+    ),
   async execute(interaction) {
+    const queueNumber = interaction.options.getInteger("int");
     const musicConnection = interaction.client.musicConnection.get(
       interaction.guild.id
     );
-
     const memberChannel = interaction.member.voice.channel;
-    const clientChannel = interaction.guild.me.voice.channel;
+    const clientChannel = interaction.guild.members.me.voice.channel;
+
     // If user not in voice channel
     if (!memberChannel) {
       return interaction.reply({
@@ -17,6 +25,7 @@ module.exports = {
         ephemeral: true,
       });
     }
+
     // If member on different voice channel
     if (clientChannel && clientChannel != memberChannel) {
       return interaction.reply({
@@ -32,7 +41,12 @@ module.exports = {
       });
       return;
     }
-    musicConnection.audioPlayer.stop();
-    interaction.reply({ embeds: [musicEmbed.message(`Skipped!`)] });
+
+    if (queueNumber > musicConnection.queue.length || queueNumber < 1) {
+      interaction.reply(`\`\`\`No Song To Play!\`\`\``);
+      return;
+    }
+    musicConnection.jump(queueNumber);
+    interaction.reply(`Jump to ${queueNumber}!`);
   },
 };

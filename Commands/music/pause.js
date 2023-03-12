@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const musicEmbed = require("../Util/music/musicEmbed.js");
+const musicEmbed = require("../../Util/music/musicEmbed.js");
 
 module.exports = {
   data: new SlashCommandBuilder().setName("pause").setDescription("Pause Song"),
@@ -8,7 +8,7 @@ module.exports = {
       interaction.guild.id
     );
     const memberChannel = interaction.member.voice.channel;
-    const clientChannel = interaction.guild.me.voice.channel;
+    const clientChannel = interaction.guild.members.me.voice.channel;
     // If user not in voice channel
     if (!memberChannel) {
       return interaction.reply({

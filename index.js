@@ -1,37 +1,20 @@
 require("dotenv").config();
-const fs = require("fs");
-const { Client, Collection, Intents } = require("discord.js");
+const { GatewayIntentBits, Partials } = require("discord.js");
+const { CustomClient } = require("./Structure/classes/CustomClient");
+const { loadEvents } = require("./Structure/Functions/eventLoader");
+const { loadCommands } = require("./Structure/Functions/commandLoader");
 
-const client = new Client({
+const client = new CustomClient({
   intents: [
-    Intents.FLAGS.GUILDS,
-    Intents.FLAGS.GUILD_MESSAGES,
-    Intents.FLAGS.GUILD_VOICE_STATES,
-    Intents.FLAGS.GUILD_MEMBERS,
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildVoiceStates,
+    GatewayIntentBits.GuildMembers,
   ],
+  partials: [Partials.Channel, Partials.Message, Partials.Reaction],
 });
 
-client.commands = new Collection();
-client.musicConnection = new Collection();
-
-const commandsFile = fs
-  .readdirSync("./commands")
-  .filter((file) => file.endsWith(".js"));
-for (const file of commandsFile) {
-  const command = require(`./commands/${file}`);
-  client.commands.set(command.data.name, command);
-}
-
-const eventsFile = fs
-  .readdirSync("./events")
-  .filter((file) => file.endsWith(".js"));
-for (const file of eventsFile) {
-  const event = require(`./events/${file}`);
-  if (event.once) {
-    client.once(event.name, (...args) => event.execute(...args));
-  } else {
-    client.on(event.name, (...args) => event.execute(...args));
-  }
-}
+loadEvents(client);
+loadCommands(client);
 
 client.login(process.env.DISCORD_TOKEN);

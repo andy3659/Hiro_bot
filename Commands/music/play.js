@@ -1,12 +1,13 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const pldl = require("play-dl");
-const MusicConnection = require("../Util/music/musicConnection");
-const musicEmbed = require("../Util/music/musicEmbed.js");
+const MusicConnection = require("../../Structure/Classes/MusicConnection");
+const musicEmbed = require("../../Util/music/musicEmbed.js");
 const {
   joinVoiceChannel,
   entersState,
   VoiceConnectionStatus,
 } = require("@discordjs/voice");
+const { ChatInputCommandInteraction } = require("discord.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -18,12 +19,15 @@ module.exports = {
         .setDescription("Enter Song Title/Url")
         .setRequired(true)
     ),
-
-  async execute(interaction) {
+  /**
+   *
+   * @param {ChatInputCommandInteraction} interaction
+   * @returns
+   */
+  async execute(interaction, client) {
     const input = interaction.options.getString("title");
-    const client = interaction.client;
     const memberChannel = interaction.member.voice.channel;
-    const clientChannel = interaction.guild.me.voice.channel;
+    const clientChannel = interaction.guild.members.me.voice.channel;
     let musicConnection = client.musicConnection.get(interaction.guild.id);
     let song = {};
     await interaction.reply({

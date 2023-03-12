@@ -1,17 +1,15 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 
-const musicEmbed = require("../Util/music/musicEmbed.js");
+const musicEmbed = require("../../Util/music/musicEmbed.js");
 module.exports = {
-  data: new SlashCommandBuilder()
-    .setName("stop")
-    .setDescription("Stop the bot and clear queue!"),
+  data: new SlashCommandBuilder().setName("skip").setDescription("Skip Song"),
   async execute(interaction) {
     const musicConnection = interaction.client.musicConnection.get(
       interaction.guild.id
     );
 
     const memberChannel = interaction.member.voice.channel;
-    const clientChannel = interaction.guild.me.voice.channel;
+    const clientChannel = interaction.guild.members.me.voice.channel;
     // If user not in voice channel
     if (!memberChannel) {
       return interaction.reply({
@@ -34,7 +32,7 @@ module.exports = {
       });
       return;
     }
-    musicConnection.stop();
-    interaction.reply({ embeds: [musicEmbed.message(`Stopped Playing!`)] });
+    musicConnection.audioPlayer.stop();
+    interaction.reply({ embeds: [musicEmbed.message(`Skipped!`)] });
   },
 };

@@ -24,8 +24,8 @@ module.exports = class MusicConnection {
     };
 
     this.voiceConnection.on("stateChange", async (_, newState) => {
-      const oldNetworking = Reflect.get(oldState, "networking");
-      const newNetworking = Reflect.get(newState, "networking");
+      const oldNetworking = Reflect.get(oldNetworkState, "networking");
+      const newNetworking = Reflect.get(newNetworkState, "networking");
 
       oldNetworking.off("stateChange", networkStateChangeHandler);
       newNetworking.on("stateChange", networkStateChangeHandler);

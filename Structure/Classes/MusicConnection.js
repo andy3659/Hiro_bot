@@ -17,8 +17,19 @@ module.exports = class MusicConnection {
     this.loop = 0;
     this.client = client;
     this.lastChannelId = lastChannelId;
+    //fix for player stopped at around 40s playing
+    const networkStateChangeHandler = (oldNetworkState, newNetworkState) => {
+      const newUdp = Reflect.get(newNetworkState, "udp");
+      clearInterval(newUdp?.keepAliveInterval);
+    };
 
     this.voiceConnection.on("stateChange", async (_, newState) => {
+      const oldNetworking = Reflect.get(oldState, "networking");
+      const newNetworking = Reflect.get(newState, "networking");
+
+      oldNetworking.off("stateChange", networkStateChangeHandler);
+      newNetworking.on("stateChange", networkStateChangeHandler);
+
       if (newState.status === VoiceConnectionStatus.Disconnected) {
         if (
           newState.reason === VoiceConnectionDisconnectReason.WebSocketClose &&

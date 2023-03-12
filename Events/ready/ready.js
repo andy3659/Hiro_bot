@@ -1,5 +1,7 @@
 const { Events, ActivityType } = require("discord.js");
 const { CustomClient } = require("../../structure/classes/CustomClient");
+const { loadCommands } = require("../../Structure/Functions/commandLoader");
+
 module.exports = {
   name: Events.ClientReady,
   once: true,
@@ -13,6 +15,9 @@ module.exports = {
       name: "Yuyu",
       type: ActivityType.Watching,
     });
+
+    loadCommands(client);
+
     console.log(`Ready! Logged in as ${user.tag}`);
   },
 };

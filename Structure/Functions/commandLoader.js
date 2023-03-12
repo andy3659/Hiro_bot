@@ -29,9 +29,7 @@ async function loadCommands(client) {
   if (config.global == true) {
     application.commands.set(commandsArray);
   } else {
-    const guild = guilds.cache.get(config.devGuildId);
-    if (!guild) return;
-    guild.commands.set(commandsArray);
+    application.commands.set(commandsArray, config.devGuildId);
   }
 }
 module.exports = { loadCommands };

@@ -2,7 +2,6 @@ require("dotenv").config();
 const { GatewayIntentBits, Partials } = require("discord.js");
 const { CustomClient } = require("./Structure/classes/CustomClient");
 const { loadEvents } = require("./Structure/Functions/eventLoader");
-const { loadCommands } = require("./Structure/Functions/commandLoader");
 
 const client = new CustomClient({
   intents: [
@@ -15,6 +14,5 @@ const client = new CustomClient({
 });
 
 loadEvents(client);
-loadCommands(client);
 
 client.login(process.env.DISCORD_TOKEN);

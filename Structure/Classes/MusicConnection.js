@@ -23,9 +23,9 @@ module.exports = class MusicConnection {
       clearInterval(newUdp?.keepAliveInterval);
     };
 
-    this.voiceConnection.on("stateChange", async (_, newState) => {
-      const oldNetworking = Reflect.get(oldNetworkState, "networking");
-      const newNetworking = Reflect.get(newNetworkState, "networking");
+    this.voiceConnection.on("stateChange", async (oldState, newState) => {
+      const oldNetworking = Reflect.get(oldState, "networking");
+      const newNetworking = Reflect.get(newState, "networking");
 
       oldNetworking.off("stateChange", networkStateChangeHandler);
       newNetworking.on("stateChange", networkStateChangeHandler);

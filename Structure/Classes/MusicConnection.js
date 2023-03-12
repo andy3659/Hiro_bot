@@ -5,6 +5,7 @@ const {
   createAudioResource,
   VoiceConnectionStatus,
   AudioPlayerStatus,
+  VoiceConnectionDisconnectReason,
 } = require("@discordjs/voice");
 module.exports = class MusicConnection {
   constructor(voiceConnection, client, lastChannelId) {
@@ -24,11 +25,14 @@ module.exports = class MusicConnection {
     };
 
     this.voiceConnection.on("stateChange", async (oldState, newState) => {
-      const oldNetworking = Reflect.get(oldState, "networking");
-      const newNetworking = Reflect.get(newState, "networking");
-
-      oldNetworking.off("stateChange", networkStateChangeHandler);
-      newNetworking.on("stateChange", networkStateChangeHandler);
+      Reflect.get(oldState, "networking")?.off(
+        "stateChange",
+        networkStateChangeHandler
+      );
+      Reflect.get(newState, "networking")?.on(
+        "stateChange",
+        networkStateChangeHandler
+      );
 
       if (newState.status === VoiceConnectionStatus.Disconnected) {
         if (
